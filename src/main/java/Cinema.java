@@ -4,6 +4,9 @@ import java.util.Scanner;
 public class Cinema {
     private static final int PRICE_FOR_FIRST_ROWS = 10;
     private static final int PRICE_FOR_OTHER_ROWS = 8;
+    private static final int BIG_HALL_CAPACITY = 60;
+    private static final int COUNT_OF_THE_FIRST_HALF_ROWS = 5;
+    private static final int HALF_ROWS_IN_THE_HALL = 2;
 
     public static void main(String[] args) {
         // Write your code here
@@ -13,7 +16,6 @@ public class Cinema {
         int seat;
         int row;
         int action;
-
 
         Scanner console = new Scanner(System.in);
         System.out.println("Enter the number of rows:");
@@ -25,6 +27,8 @@ public class Cinema {
         System.out.println();
         totalIncome = totalIncomeCalculation(rows, seats);
         String[][] hall = fillSeatsWithCharacter(rows, seats);
+
+
         do {
             printMenu();
             System.out.print("> ");
@@ -57,7 +61,7 @@ public class Cinema {
                     }
                     break;
                 case 3:
-                    statistics(purchasedTickets, currentIncome, totalIncome, rows, seats);
+                    getStatistics(purchasedTickets, currentIncome, totalIncome, rows, seats);
             }
         } while (action != 0);
 
@@ -68,7 +72,7 @@ public class Cinema {
     }
 
 
-    private static void statistics(int purchasedTickets, int currentIncome, int totalIncome, int rows, int seats) {
+    private static void getStatistics(int purchasedTickets, int currentIncome, int totalIncome, int rows, int seats) {
         float purchasedTicketsPercent;
         System.out.println("Number of purchased tickets: " + purchasedTickets);
         float totalPlace = seats * rows;
@@ -82,28 +86,33 @@ public class Cinema {
 
     private static int totalIncomeCalculation(int rows, int seats) {
         int totalIncome = 0;
-        if (seats * rows <= 60) {
-            totalIncome = seats * rows * 10;
-        } else if (rows % 2 == 0 && seats * rows > 60) {
-            totalIncome = (seats * (rows / 2) * 8) + (seats * (rows / 2) * 10);
-        } else if (rows % 2 != 0 && seats * rows > 60) {
-            int newRows = rows % 2;
-            totalIncome = (seats * ((rows - newRows) / 2) * 10) + (seats * (rows - ((rows - newRows) / 2)) * 8);
+        if (seats * rows <= BIG_HALL_CAPACITY) {
+            totalIncome = seats * rows * PRICE_FOR_FIRST_ROWS;
+        } else if (rows % HALF_ROWS_IN_THE_HALL == 0 && seats * rows > BIG_HALL_CAPACITY) {
+            totalIncome = (seats * (rows / HALF_ROWS_IN_THE_HALL) * PRICE_FOR_OTHER_ROWS) +
+                    (seats * (rows / HALF_ROWS_IN_THE_HALL) * PRICE_FOR_FIRST_ROWS);
+        } else if (rows % HALF_ROWS_IN_THE_HALL != 0 && seats * rows > BIG_HALL_CAPACITY) {
+            int newRows = rows % HALF_ROWS_IN_THE_HALL;
+            totalIncome = (seats * ((rows - newRows) / HALF_ROWS_IN_THE_HALL) * PRICE_FOR_FIRST_ROWS) +
+                    (seats * (rows - ((rows - newRows) / HALF_ROWS_IN_THE_HALL)) * PRICE_FOR_OTHER_ROWS);
         }
         return totalIncome;
     }
 
+
     private static int ticketPriceCalculation(int rows, int seats, int row) {
         int price = 0;
-        if (seats * rows <= 60) {
+        if (seats * rows <= BIG_HALL_CAPACITY) {
             price = PRICE_FOR_FIRST_ROWS;
-        } else if (rows % 2 == 0 && seats * rows > 60 && row < 5) {
+        } else if (rows % HALF_ROWS_IN_THE_HALL == 0 && seats * rows > BIG_HALL_CAPACITY
+                && row < COUNT_OF_THE_FIRST_HALF_ROWS) {
             price = PRICE_FOR_FIRST_ROWS;
-        } else if (rows % 2 == 0 && seats * rows > 60 && row > 5) {
+        } else if (rows % HALF_ROWS_IN_THE_HALL == 0 && seats * rows > BIG_HALL_CAPACITY
+                && row > COUNT_OF_THE_FIRST_HALF_ROWS) {
             price = PRICE_FOR_OTHER_ROWS;
-        } else if (rows % 2 != 0 && seats * rows > 60) {
-            int newRows = rows % 2;
-            if (row <= (rows - newRows) / 2) {
+        } else if (rows % HALF_ROWS_IN_THE_HALL != 0 && seats * rows > BIG_HALL_CAPACITY) {
+            int newRows = rows % HALF_ROWS_IN_THE_HALL;
+            if (row <= (rows - newRows) / HALF_ROWS_IN_THE_HALL) {
                 price = PRICE_FOR_FIRST_ROWS;
             } else {
                 price = PRICE_FOR_OTHER_ROWS;
@@ -113,15 +122,17 @@ public class Cinema {
     }
 
     private static void printTicketPrice(int rows, int seats, int row) {
-        if (seats * rows <= 60) {
+        if (seats * rows <= BIG_HALL_CAPACITY) {
             System.out.println("Ticket price: " + "$10\n");
-        } else if (rows % 2 == 0 && seats * rows > 60 && row < 5) {
+        } else if (rows % HALF_ROWS_IN_THE_HALL == 0 && seats * rows > BIG_HALL_CAPACITY
+                && row < COUNT_OF_THE_FIRST_HALF_ROWS) {
             System.out.println("Ticket price: " + "$10\n");
-        } else if (rows % 2 == 0 && seats * rows > 60 && row > 5) {
+        } else if (rows % HALF_ROWS_IN_THE_HALL == 0 && seats * rows > BIG_HALL_CAPACITY
+                && row > COUNT_OF_THE_FIRST_HALF_ROWS) {
             System.out.println("Ticket price: " + "$8\n");
-        } else if (rows % 2 != 0 && seats * rows > 60) {
-            int newRows = rows % 2;
-            if (row <= (rows - newRows) / 2) {
+        } else if (rows % HALF_ROWS_IN_THE_HALL != 0 && seats * rows > BIG_HALL_CAPACITY) {
+            int newRows = rows % HALF_ROWS_IN_THE_HALL;
+            if (row <= (rows - newRows) / HALF_ROWS_IN_THE_HALL) {
                 System.out.println("Ticket price: " + "$10\n");
             } else {
                 System.out.println("Ticket price: " + "$8\n");
